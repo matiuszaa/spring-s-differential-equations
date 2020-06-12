@@ -7,35 +7,49 @@
 
 #define g 9.81 //acceleration of gravity
 
-void rhsfun(double time, double* variables, double* derivatives)
+void rhsfun(double time, double* variables, double* derivatives, double* stables)
 {
-	derivatives[0] = -variables[2] * variables[1] / variables[3] - variables[4] * g;
-	derivatives[1] = variables[0];
+	if (variables[1] > 0)
+		derivatives[1] = (-stables[0] - stables[1] * stables[0] * variables[0] * variables[0]) * variables[0] / stables[2] - stables[3] * g;
+	else
+		derivatives[1] = (-stables[0] - stables[1] * stables[0] * variables[0] * variables[0]) * variables[0] / stables[2] + stables[3] * g;
+	derivatives[0] = variables[1];
 }
 
 void main()
-{
-	double variables[5], time, h, derivatives[2], Y1[2], Energy, k1, k2, end;
+{	
+	double variables[2], stables [4], time, h, derivatives[2], Y1[2], Energy,end;
 
 	printf("enter time frames\n");
 	scanf("%lf%lf", &time, &end);
 	printf("enter integration step\n");
 	scanf("%lf", &h);
 	printf("enter initial position and velocity(x0 and v0)\n");
-	scanf("%lf%lf", &variables[1], &variables[0]);
+	scanf("%lf%lf", &variables[0], &variables[1]);
 	printf("enter spring's factors");
-	scanf("%lf%lf", &k1, &k2);
+	scanf("%lf%lf", &stables[0], &stables[1]);
 	printf("enter object's mass and friction's factor");
-	scanf("%lf%lf", &variables[3], &variables[4]);
-
-
+	scanf("%lf%lf", &stables[2], &stables[3]);
+	Energy = stables[2] * variables[1] * variables[1] / 2 + (stables[0] + stables[1] * stables[0] * variables[0] * variables[0]) * variables[0] * variables[0] / 2 - stables[3] * stables[2] * g;
+	printf("%lf\n", Energy);
+	FILE* f;
+	f = fopen("wyniki1.txt", "a");
+	double a;
 	for (time; time < end; time += h)
 	{
-		variables[2] = k1 + k1 * k2 * variables[1] * variables[1];
-		printf("%lf\n", variables[2]);
-		vrk4(time, variables, h, 2, rhsfun, Y1);
+		//a = stables[0] + stables[1] * stables[0] * variables[0] * variables[0];
+		
+		vrk4(time, variables, h, 2, rhsfun, Y1, stables);
 		variables[0] = Y1[0];
 		variables[1] = Y1[1];
+		fprintf(f, "%lf\t%lf\t%lf\t%lf\n", time, Y1[0], Y1[1], Energy);
+		if(variables[1]>0)
+			Energy = stables[2] * variables[1] * variables[1] / 2 + (stables[0] + stables[1] * stables[0] * variables[0] * variables[0]) * variables[0] * variables[0] / 2;
+		else
+			Energy = stables[2] * variables[1] * variables[1] / 2 - (stables[0] + stables[1] * stables[0] * variables[0] * variables[0]) * variables[0] * variables[0] / 2;
+
+		printf("%lf\n", Energy);
+		
 	}
 
 }

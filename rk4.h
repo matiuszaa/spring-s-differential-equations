@@ -32,6 +32,6 @@ double rk4(double x0, double y0, double h, double (*fun)(double, double));
 // y1 - obliczona wartosc zmiennej zaleznej w punkcie x0+h
 //      (tablica n-elementowa)
 
-void vrk4(double x0, double y0[], double h, int n, void (*fun)(double, double*, double*), double y1[]);
+void vrk4(double x0, double y0[], double h, int n, void (*fun)(double, double*, double*,double*), double y1[], double stables[]);
 
 #endif

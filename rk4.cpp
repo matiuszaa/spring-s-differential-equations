@@ -40,36 +40,37 @@ double rk4(double x0, double y0, double h, double (*fun)(double, double))
 // n  - liczba rownan
 // fun(x,y,prawastr) - nazwa funkcji obliczajacej prawe strony
 // y1 - obliczona wartosc zmiennej zaleznej w punkcie x0+h
+// stables - sta³e niezale¿ne
 //      (tablica n-elementowa)
 
-void vrk4(double x0, double y0[], double h, int n, void (*fun)(double, double*, double*), double y1[])
+void vrk4(double x0, double y0[], double h, int n, void (*fun)(double, double*, double*, double*), double y1[], double stables[])
 {
     int i;
     double k1[MAXN], k2[MAXN], k3[MAXN], k4[MAXN];
     double ytmp[MAXN];
 
-    fun(x0, y0, k1);
+    fun(x0, y0, k1, stables);
     for (i = 0; i < n; ++i)
     {
         k1[i] *= h;
         ytmp[i] = y0[i] + k1[i] / 2.0;
     }
 
-    fun(x0 + h / 2.0, ytmp, k2);
+    fun(x0 + h / 2.0, ytmp, k2,stables);
     for (i = 0; i < n; ++i)
     {
         k2[i] *= h;
         ytmp[i] = y0[i] + k2[i] / 2.0;
     }
 
-    fun(x0 + h / 2.0, ytmp, k3);
+    fun(x0 + h / 2.0, ytmp, k3,stables);
     for (i = 0; i < n; ++i)
     {
         k3[i] *= h;
         ytmp[i] = y0[i] + k3[i];
     }
 
-    fun(x0 + h, ytmp, k4);
+    fun(x0 + h, ytmp, k4,stables);
     for (i = 0; i < n; ++i)
         k4[i] *= h;
 
